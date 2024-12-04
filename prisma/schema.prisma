@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String?
+  diamond      Int
+  wallets      Wallet[]
+  histories    Battle[]
+  rewards      Reward[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  Ranking      Ranking?    @relation(fields: [rankingId], references: [id])
+  rankingId    String?
+  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  NFT          NFT[]
+  Event        Event?      @relation(fields: [eventId], references: [id])
+  eventId      String?
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  address   String
+  nfts      NFT[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model NFT {
+  id         String   @id @default(cuid())
+  name       String
+  url        String?
+  address    String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  booId      String
+  boo        Boo      @relation(fields: [booId], references: [id])
+  collection String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Wallet     Wallet?  @relation(fields: [walletId], references: [id])
+  walletId   String?
+}
+
+model Boo {
+  id           String @id @default(cuid())
+  name         String @unique
+  url          String @unique
+  cardId       String
+  specialSkill Card   @relation(fields: [cardId], references: [id])
+  nfts         NFT[]
+}
+
+model Card {
+  id          String       @id @default(cuid())
+  name        String
+  type        CardType     @default(Normal)
+  property    CardProperty @default(Earth)
+  effect      CardEffect   @default(Attack)
+  damage      Int
+  description String
+  boos        Boo[]
+  Battle      Battle?      @relation(fields: [battleId], references: [id])
+  battleId    String?
+}
+
+model Battle {
+  id          String   @id @default(cuid())
+  name        String
+  type        Int
+  winnerId    String
+  loserId     String
+  winner      User     @relation(fields: [winnerId], references: [id])
+  stakingPool Int
+  cards       Card[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ranking {
+  id        String   @id @default(cuid())
+  users     User[]
+  startAt   String
+  endAt     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reward {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  amount       Int
+  type         RewardType @default(EventReward)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Tournament {
+  id        String           @id @default(cuid())
+  joinUsers User[]
+  rewards   Reward[]
+  startAt   String
+  endAt     String
+  status    TournamentStatus @default(Pending)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  joinMembers User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum RewardType {
+  EventReward
+  TournamentReward
+}
+
+enum TournamentStatus {
+  Pending
+  Progress
+  Finish
+}
+
+enum CardProperty {
+  Earth
+  Water
+  Fire
+  Air
+  Wood
+}
+
+enum CardType {
+  Special
+  Normal
+}
+
+enum CardEffect {
+  Attack
+  Defense
+  Trap
+}

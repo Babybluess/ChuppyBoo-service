@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBooDto } from './dto/create-boo.dto';
 import { UpdateBooDto } from './dto/update-boo.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class BooService {
-  create(createBooDto: CreateBooDto) {
-    return 'This action adds a new boo';
+  constructor(private prisma: PrismaService) {}
+
+  async getAllBoos(): Promise<any[]> {
+    return await this.prisma.boo.findMany({
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        specialSkill: {
+          select: {
+            name: true,
+          }
+        },
+      }
+    })
   }
 
-  findAll() {
-    return `This action returns all boo`;
-  }
+  async getBooDetailById(id: string): Promise<any> {
+    const boo = await this.prisma.boo.findUnique({
+      where: {id},
+      select: {
+        id: true,
+        name: true,
+        url: true,
+        specialSkill: {
+          select: {
+            name: true,
+          }
+        },
+      }
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} boo`;
-  }
+    if(!boo) {
+      throw new NotFoundException(`Boo with id ${id} not found`);
+    }
 
-  update(id: number, updateBooDto: UpdateBooDto) {
-    return `This action updates a #${id} boo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} boo`;
+    return boo;
   }
 }

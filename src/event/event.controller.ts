@@ -7,28 +7,15 @@ import { UpdateEventDto } from './dto/update-event.dto';
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Post()
-  create(@Body() createEventDto: CreateEventDto) {
-    return this.eventService.create(createEventDto);
-  }
-
+  // Fetch all events details
   @Get()
-  findAll() {
-    return this.eventService.findAll();
+  async getAllEvents(): Promise<any[]> {
+    return this.eventService.getAllEvents();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eventService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventService.update(+id, updateEventDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventService.remove(+id);
+  // Fetch event details by id: id, name, type
+  @Get('detail/:id')
+  async getEventDetailsById(@Param('id') id: string): Promise<any> {
+    return this.eventService.getEventDetailsById(id);
   }
 }

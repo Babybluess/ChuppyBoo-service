@@ -1,26 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBattleDto } from './dto/create-battle.dto';
-import { UpdateBattleDto } from './dto/update-battle.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class BattleService {
-  create(createBattleDto: CreateBattleDto) {
-    return 'This action adds a new battle';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all battle`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} battle`;
-  }
-
-  update(id: number, updateBattleDto: UpdateBattleDto) {
-    return `This action updates a #${id} battle`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} battle`;
+  async getAllBattles(): Promise<any> {
+    return this.prisma.battle.findMany({
+      select: {
+        name: true,
+        type: true,
+        stakingPool: true,
+        winner: {
+          select: {
+            name: true,
+          }
+        }
+      }
+    })
   }
 }

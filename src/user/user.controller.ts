@@ -5,9 +5,10 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // Fetch user details: name, diamond, totalNFTs
   @Get(':id/profile')
   async showProfile(@Param('id') userId: string) {
-    const profile = await this.userService.showProfile(userId);
+    const profile = await this.userService.getUserDetails(userId);
     if (!profile) {
       return { message: 'User not found' };
     }

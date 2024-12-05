@@ -1,34 +1,19 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { CardService } from './card.service';
-import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
 
 @Controller('card')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
-  @Post()
-  create(@Body() createCardDto: CreateCardDto) {
-    return this.cardService.create(createCardDto);
-  }
-
+  // Fetch all cards details
   @Get()
-  findAll() {
-    return this.cardService.findAll();
+  async getAllCards(): Promise<any[]> {
+    return this.cardService.getAllCards();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cardService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
-    return this.cardService.update(+id, updateCardDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cardService.remove(+id);
+  // Fetch card details by id: id, name, type
+  @Get('detail/:id')
+  async getCardDetailsById(@Param('id') id: string): Promise<any> {
+    return this.cardService.getCardDetailsById(id);
   }
 }

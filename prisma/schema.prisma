@@ -26,9 +26,9 @@ model User {
   Ranking    Ranking?     @relation(fields: [rankingId], references: [id])
   rankingId  String?
   Tournament Tournament[]
-  NFT        NFT[]
   Event      Event?       @relation(fields: [eventId], references: [id])
   eventId    String?
+  NFT        NFT[]
 }
 
 model Wallet {

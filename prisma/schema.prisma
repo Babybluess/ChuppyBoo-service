@@ -14,21 +14,21 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(cuid())
-  name         String?
-  diamond      Int
-  wallets      Wallet[]
-  histories    Battle[]
-  rewards      Reward[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  Ranking      Ranking?    @relation(fields: [rankingId], references: [id])
-  rankingId    String?
-  Tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-  tournamentId String?
-  NFT          NFT[]
-  Event        Event?      @relation(fields: [eventId], references: [id])
-  eventId      String?
+  id         String       @id @default(cuid())
+  name       String?
+  avatar     String?
+  diamond    Int
+  wallets    Wallet[]
+  histories  Battle[]
+  rewards    Reward[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Ranking    Ranking?     @relation(fields: [rankingId], references: [id])
+  rankingId  String?
+  Tournament Tournament[]
+  NFT        NFT[]
+  Event      Event?       @relation(fields: [eventId], references: [id])
+  eventId    String?
 }
 
 model Wallet {
@@ -93,12 +93,14 @@ model Battle {
 }
 
 model Ranking {
-  id        String   @id @default(cuid())
-  users     User[]
-  startAt   String
-  endAt     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String     @id @default(cuid())
+  users        User[]
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  startAt      String
+  endAt        String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Reward {
@@ -122,6 +124,7 @@ model Tournament {
   status    TournamentStatus @default(Pending)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+  Ranking   Ranking[]
 }
 
 model Event {

@@ -1,26 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  constructor(private readonly prisma: PrismaService) { }
 
-  findAll() {
-    return `This action returns all user`;
-  }
+  async getUserDetails(userId: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          name: true,
+          diamond: true,
+          wallets : {
+            select: {
+              nfts: true,
+            }
+          },
+          histories: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              winnerId: true,
+              loserId: true,
+              createdAt: true,
+            }
+          }
+        }
+      })
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+      if (!user) {
+        throw new Error('User not found');
+      }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+      const totalNFTs = user.wallets?.reduce(
+        (count, wallet) => count + wallet.nfts.length,
+        0
+      );
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+      return {
+        name: user.name,
+        diamond: user.diamond,
+        totalNFTs,
+        battleHistory: user.histories.map((battle) => ({
+          id: battle.id,
+          name: battle.name,
+          type: battle.type,
+          winnerId: battle.winnerId,
+          loserId: battle.loserId,
+          createdAt: battle.createdAt,
+        })),
+      }
+    } catch (error) {
+      throw new Error(`Failed to fetch user details: ${error.message}`);
+    }
+  
   }
 }

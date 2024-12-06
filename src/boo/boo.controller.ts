@@ -1,34 +1,21 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { BooService } from './boo.service';
-import { CreateBooDto } from './dto/create-boo.dto';
-import { UpdateBooDto } from './dto/update-boo.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('boo')
+@ApiTags('Boo')
+@Controller({ version: '1', path: 'boo' })
 export class BooController {
   constructor(private readonly booService: BooService) {}
 
-  @Post()
-  create(@Body() createBooDto: CreateBooDto) {
-    return this.booService.create(createBooDto);
-  }
-
+  // Fetch all boos details
   @Get()
-  findAll() {
-    return this.booService.findAll();
+  async getAllBoos(): Promise<any[]> {
+    return this.booService.getAllBoos();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.booService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBooDto: UpdateBooDto) {
-    return this.booService.update(+id, updateBooDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.booService.remove(+id);
+  // Fetch boo details by id: id, name, url, specialSkill name
+  @Get('detail/:id')
+  async getBooDetailById(@Param('id') id: string): Promise<any> {
+    return this.booService.getBooDetailById(id);
   }
 }

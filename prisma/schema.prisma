@@ -80,16 +80,17 @@ model Card {
 }
 
 model Battle {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
   type        Int
   winnerId    String
   loserId     String
-  winner      User     @relation(fields: [winnerId], references: [id])
+  winner      User         @relation(fields: [winnerId], references: [id])
   stakingPool Int
+  status      BattleStatus @default(Pending)
   cards       Card[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Ranking {
@@ -142,6 +143,12 @@ enum RewardType {
 }
 
 enum TournamentStatus {
+  Pending
+  Progress
+  Finish
+}
+
+enum BattleStatus {
   Pending
   Progress
   Finish

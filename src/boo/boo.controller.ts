@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { BooService } from './boo.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('boo')
+@ApiTags('Boo')
+@Controller({ version: '1', path: 'boo' })
 export class BooController {
   constructor(private readonly booService: BooService) {}
 

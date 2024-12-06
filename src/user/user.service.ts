@@ -16,6 +16,16 @@ export class UserService {
             select: {
               nfts: true,
             }
+          },
+          histories: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              winnerId: true,
+              loserId: true,
+              createdAt: true,
+            }
           }
         }
       })
@@ -33,6 +43,14 @@ export class UserService {
         name: user.name,
         diamond: user.diamond,
         totalNFTs,
+        battleHistory: user.histories.map((battle) => ({
+          id: battle.id,
+          name: battle.name,
+          type: battle.type,
+          winnerId: battle.winnerId,
+          loserId: battle.loserId,
+          createdAt: battle.createdAt,
+        })),
       }
     } catch (error) {
       throw new Error(`Failed to fetch user details: ${error.message}`);
